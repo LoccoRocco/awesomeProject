@@ -3,5 +3,10 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println("Hello World")
+	err := Run()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Works!")
 }
