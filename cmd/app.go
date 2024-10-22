@@ -3,6 +3,7 @@ package main
 import (
 	"awesomeProject/internal/postgres"
 	"awesomeProject/internal/repository"
+	"awesomeProject/internal/service"
 	"database/sql"
 	"fmt"
 	"log"
@@ -23,18 +24,12 @@ func Run() error {
 	actorRepo := repository.NewActor(db)
 	movieRepo := repository.NewMovie(db)
 
-	actor, err := actorRepo.CreateActor("Brad", "2000-02-02", "Male")
-	if err != nil {
-		return err
-	}
+	actorService := service.NewActor(actorRepo)
+	movieService := service.NewMovie(movieRepo)
 
-	movie, err := movieRepo.CreateMovie("TROY", "2000-02-02", "Brad Pit is a troy leader")
-	if err != nil {
-		return err
-	}
+	filmotekaService := service.NewFilmoteka(movieService, actorService)
 
-	fmt.Printf("actor with id:%v created\n", actor)
-	fmt.Printf("movie with id:%v created\n", movie)
+	fmt.Println(filmotekaService)
 
 	return nil
 }
