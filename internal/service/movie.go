@@ -6,7 +6,7 @@ type repoMovie interface {
 	CreateMovie(movieModel models.CreateMovie) (int, error)
 	UpdateMovie(movieModel models.UpdateMovie) error
 	DeleteMovie(movieModel models.Movie) error
-	GetMovie(name string) (models.Movie, error)
+	GetMovies(filter models.Movie) ([]models.Movie, error)
 }
 
 type Movie struct {
@@ -29,6 +29,6 @@ func (m *Movie) DeleteMovie(movieModel models.Movie) error {
 	return m.DeleteMovie(movieModel)
 }
 
-func (m *Movie) GetMovie(name string) (models.Movie, error) {
-	return m.GetMovie(name)
+func (m *Movie) GetMovies(filter models.Movie) ([]models.Movie, error) {
+	return m.GetMovies(filter)
 }

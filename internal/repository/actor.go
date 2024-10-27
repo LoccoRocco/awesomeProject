@@ -3,20 +3,31 @@ package repository
 import (
 	"awesomeProject/internal/models"
 	"database/sql"
-	"errors"
-	"fmt"
+	"github.com/Masterminds/squirrel"
 )
 
 type actor struct {
-	db *sql.DB
+	db      *sql.DB
+	builder squirrel.StatementBuilderType
 }
 
 func NewActor(db *sql.DB) *actor {
-	return &actor{db}
+	return &actor{db: db, builder: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)}
 }
 func (a *actor) CreateActor(actorModel models.CreateActor) (int, error) {
 	var actorID int
-	err := a.db.QueryRow("INSERT INTO actors (name, birth_date, gender) VALUES($1, $2, $3)", actorModel.Name, actorModel.BirthDate, actorModel.Gender).Scan(&actorID)
+	query, args, err := a.builder.
+		Insert("actors").
+		Columns("name", "birth_date", "gender").
+		Values(actorModel.Name, actorModel.BirthDate, actorModel.Gender).
+		Suffix("RETURNING id").
+		ToSql()
+
+	if err != nil {
+		return 0, err
+	}
+
+	err = a.db.QueryRow(query, args...).Scan(&actorID)
 	if err != nil {
 		return 0, err
 	}
@@ -24,23 +35,79 @@ func (a *actor) CreateActor(actorModel models.CreateActor) (int, error) {
 }
 
 func (a *actor) UpdateActor(actorModel models.UpdateActor) error {
-	_, err := a.db.Exec("UPDATE actors SET name=$1, birth_date=$2, gender=$3 WHERE id=$4", actorModel.Name, actorModel.BirthDate, actorModel.Gender, actorModel.ID)
+	query, args, err := a.builder.
+		Update("actors").
+		Set("name", actorModel.Name).
+		Set("birth_date", actorModel.BirthDate).
+		Set("gender", actorModel.Gender).
+		Where("id = ?", actorModel.ID).
+		ToSql()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = a.db.Exec(query, args...)
 	return err
 }
 
 func (a *actor) DeleteActor(actorModel models.Actor) error {
-	_, err := a.db.Exec("DELETE FROM actors WHERE id=$1", actorModel.ID)
+	query, args, err := a.builder.
+		Delete("actors").
+		Where("id = ?", actorModel.ID).
+		ToSql()
+
+	if err != nil {
+		return err
+	}
+
+	_, err = a.db.Exec(query, args...)
 	return err
 }
 
-func (a *actor) GetActor(name string) (models.Actor, error) {
-	var actor models.Actor
-	err := a.db.QueryRow("SELECT id, name, birth_date, gender FROM actors WHERE name = $1", name).Scan(&actor.ID, &actor.Name, &actor.BirthDate, &actor.Gender)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return actor, fmt.Errorf("no actor found with id %d", name)
-		}
-		return actor, err
+func (a *actor) GetActors(filter models.Actor) ([]models.Actor, error) {
+	var actors []models.Actor
+
+	query := a.builder.Select("id", "name", "birth_date", "gender").
+		From("actors")
+
+	if filter.Name != "" {
+		query = query.Where(squirrel.Like{"name": "%" + filter.Name + "%"})
 	}
-	return actor, nil
+	if filter.BirthDate != "" {
+		query = query.Where(squirrel.Eq{"birth_date": filter.BirthDate})
+	}
+	if filter.Gender != "" {
+		query = query.Where(squirrel.Eq{"gender": filter.Gender})
+	}
+
+	sqlx, args, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := a.db.Query(sqlx, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
+
+	for rows.Next() {
+		var actor models.Actor
+		if err := rows.Scan(&actor.ID, &actor.Name, &actor.BirthDate, &actor.Gender); err != nil {
+			return nil, err
+		}
+		actors = append(actors, actor)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return actors, nil
 }
