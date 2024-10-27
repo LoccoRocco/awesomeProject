@@ -1,9 +1,11 @@
 package service
 
+import "awesomeProject/internal/models"
+
 type storeMovie interface {
-	CreateMovie(title string, releaseDate string, description string) (int, error)
-	UpdateMovie(id int, title string, releaseDate string, description string) error
-	DeleteMovie(id int) error
+	CreateMovie(movieModel models.CreateMovie) (int, error)
+	UpdateMovie(movieModel models.UpdateMovie) error
+	DeleteMovie(movieModel models.Movie) error
 }
 
 type movie struct {
@@ -14,14 +16,14 @@ func NewMovie(store storeMovie) *movie {
 	return &movie{store}
 }
 
-func (m *movie) CreateMovie(title string, releaseDate string, description string) (int, error) {
-	return m.CreateMovie(title, releaseDate, description)
+func (m *movie) CreateMovie(movieModel models.CreateMovie) (int, error) {
+	return m.CreateMovie(movieModel)
 }
 
-func (m *movie) UpdateMovie(id int, title string, releaseDate string, description string) error {
-	return m.UpdateMovie(id, title, releaseDate, description)
+func (m *movie) UpdateMovie(movieModel models.UpdateMovie) error {
+	return m.UpdateMovie(movieModel)
 }
 
-func (m *movie) DeleteMovie(id int) error {
-	return m.DeleteMovie(id)
+func (m *movie) DeleteMovie(movieModel models.Movie) error {
+	return m.DeleteMovie(movieModel)
 }

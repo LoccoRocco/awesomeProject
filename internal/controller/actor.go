@@ -1,7 +1,9 @@
 package controller
 
+import "awesomeProject/internal/models"
+
 type ServiceActor interface {
-	CreateActor(name string, birthDate string, gender string) (int, error)
-	DeleteActor(id int) error
-	UpdateActor(id int, name string, birthDate string, gender string) error
+	CreateActor(actorModel models.CreateActor) (int, error)
+	DeleteActor(actorModel models.Actor) error
+	UpdateActor(actorModel models.UpdateActor) error
 }

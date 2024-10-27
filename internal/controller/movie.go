@@ -1,7 +1,9 @@
 package controller
 
+import "awesomeProject/internal/models"
+
 type ServiceMovie interface {
-	CreateMovie(title string, releaseDate string, description string) (int, error)
-	UpdateMovie(id int, title string, releaseDate string, description string) error
-	DeleteMovie(id int) error
+	CreateMovie(movieModel models.CreateMovie) (int, error)
+	UpdateMovie(movieModel models.UpdateMovie) error
+	DeleteMovie(movieModel models.Movie) error
 }
