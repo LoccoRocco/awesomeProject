@@ -1,6 +1,7 @@
 package main
 
 import (
+	"awesomeProject/internal/controller"
 	"awesomeProject/internal/postgres"
 	"awesomeProject/internal/repository"
 	"awesomeProject/internal/service"
@@ -27,7 +28,7 @@ func Run() error {
 	actorService := service.NewActor(actorRepo)
 	movieService := service.NewMovie(movieRepo)
 
-	filmotekaService := service.NewFilmoteka(movieService, actorService)
+	filmotekaService := controller.NewFilmoteka(movieService, actorService)
 
 	fmt.Println(filmotekaService)
 

@@ -9,26 +9,26 @@ type repoActor interface {
 	GetActor(name string) (models.Actor, error)
 }
 
-type actor struct {
+type Actor struct {
 	repo repoActor
 }
 
-func NewActor(repo repoActor) *actor {
-	return &actor{repo}
+func NewActor(repo repoActor) *Actor {
+	return &Actor{repo}
 }
 
-func (a *actor) CreateActor(actorModel models.CreateActor) (int, error) {
+func (a *Actor) CreateActor(actorModel models.CreateActor) (int, error) {
 	return a.CreateActor(actorModel)
 }
 
-func (a *actor) DeleteActor(actorModel models.Actor) error {
+func (a *Actor) DeleteActor(actorModel models.Actor) error {
 	return a.DeleteActor(actorModel)
 }
 
-func (a *actor) UpdateActor(actorModel models.UpdateActor) error {
+func (a *Actor) UpdateActor(actorModel models.UpdateActor) error {
 	return a.UpdateActor(actorModel)
 }
 
-func (a *actor) GetActor(name string) (models.Actor, error) {
+func (a *Actor) GetActor(name string) (models.Actor, error) {
 	return a.GetActor(name)
 }

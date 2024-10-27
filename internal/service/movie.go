@@ -9,26 +9,26 @@ type repoMovie interface {
 	GetMovie(name string) (models.Movie, error)
 }
 
-type movie struct {
+type Movie struct {
 	repo repoMovie
 }
 
-func NewMovie(repo repoMovie) *movie {
-	return &movie{repo}
+func NewMovie(repo repoMovie) *Movie {
+	return &Movie{repo}
 }
 
-func (m *movie) CreateMovie(movieModel models.CreateMovie) (int, error) {
+func (m *Movie) CreateMovie(movieModel models.CreateMovie) (int, error) {
 	return m.CreateMovie(movieModel)
 }
 
-func (m *movie) UpdateMovie(movieModel models.UpdateMovie) error {
+func (m *Movie) UpdateMovie(movieModel models.UpdateMovie) error {
 	return m.UpdateMovie(movieModel)
 }
 
-func (m *movie) DeleteMovie(movieModel models.Movie) error {
+func (m *Movie) DeleteMovie(movieModel models.Movie) error {
 	return m.DeleteMovie(movieModel)
 }
 
-func (m *movie) GetMovie(name string) (models.Movie, error) {
+func (m *Movie) GetMovie(name string) (models.Movie, error) {
 	return m.GetMovie(name)
 }
