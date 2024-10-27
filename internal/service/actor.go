@@ -2,18 +2,19 @@ package service
 
 import "awesomeProject/internal/models"
 
-type storeActor interface {
+type repoActor interface {
 	CreateActor(actorModel models.CreateActor) (int, error)
 	DeleteActor(actorModel models.Actor) error
 	UpdateActor(actorModel models.UpdateActor) error
+	GetActor(name string) (models.Actor, error)
 }
 
 type actor struct {
-	store storeActor
+	repo repoActor
 }
 
-func NewActor(store storeActor) *actor {
-	return &actor{store}
+func NewActor(repo repoActor) *actor {
+	return &actor{repo}
 }
 
 func (a *actor) CreateActor(actorModel models.CreateActor) (int, error) {
@@ -26,4 +27,8 @@ func (a *actor) DeleteActor(actorModel models.Actor) error {
 
 func (a *actor) UpdateActor(actorModel models.UpdateActor) error {
 	return a.UpdateActor(actorModel)
+}
+
+func (a *actor) GetActor(name string) (models.Actor, error) {
+	return a.GetActor(name)
 }

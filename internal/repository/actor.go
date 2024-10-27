@@ -3,6 +3,8 @@ package repository
 import (
 	"awesomeProject/internal/models"
 	"database/sql"
+	"errors"
+	"fmt"
 )
 
 type actor struct {
@@ -29,4 +31,16 @@ func (a *actor) UpdateActor(actorModel models.UpdateActor) error {
 func (a *actor) DeleteActor(actorModel models.Actor) error {
 	_, err := a.db.Exec("DELETE FROM actors WHERE id=$1", actorModel.ID)
 	return err
+}
+
+func (a *actor) GetActor(name string) (models.Actor, error) {
+	var actor models.Actor
+	err := a.db.QueryRow("SELECT id, name, birth_date, gender FROM actors WHERE name = $1", name).Scan(&actor.ID, &actor.Name, &actor.BirthDate, &actor.Gender)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return actor, fmt.Errorf("no actor found with id %d", name)
+		}
+		return actor, err
+	}
+	return actor, nil
 }

@@ -3,6 +3,7 @@ package repository
 import (
 	"awesomeProject/internal/models"
 	"database/sql"
+	"errors"
 )
 
 type movie struct {
@@ -29,4 +30,16 @@ func (m *movie) UpdateMovie(movieModel models.UpdateMovie) error {
 func (m *movie) DeleteMovie(movieModel models.Movie) error {
 	_, err := m.db.Exec("DELETE FROM movies WHERE id=$1", movieModel.ID)
 	return err
+}
+
+func (m *movie) GetMovie(name string) (models.Movie, error) {
+	var movie models.Movie
+	err := m.db.QueryRow("SELECT id, title, release_date, description FROM movies WHERE id = $1", name).Scan(&movie.ID, &movie.Title, &movie.ReleaseDate, &movie.Description)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.Movie{}, errors.New("movie not found")
+		}
+		return models.Movie{}, err
+	}
+	return movie, nil
 }
