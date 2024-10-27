@@ -11,6 +11,14 @@ type movie struct {
 	builder squirrel.StatementBuilderType
 }
 
+type MovieFilter struct {
+	IDIn            []int
+	Title           string
+	ReleaseDateFrom string
+	ReleaseDateTo   string
+	ActorIDIn       []int
+}
+
 func NewMovie(db *sql.DB) *movie {
 	return &movie{db: db, builder: squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)}
 }
@@ -62,31 +70,41 @@ func (m *movie) DeleteMovie(movieModel models.Movie) error {
 	return err
 }
 
-func (m *movie) GetMovies(filter models.Movie) ([]models.Movie, error) {
+func (m *movie) GetMovies(filter MovieFilter) ([]models.Movie, error) {
 	var movies []models.Movie
 
-	query := m.builder.Select("id", "title", "release_date", "description").
-		From("movies")
+	query := m.builder.Select("m.id", "m.title", "m.release_date").
+		From("movies m")
 
-	if filter.ID != 0 {
-		query = query.Where(squirrel.Eq{"id": filter.ID})
+	if len(filter.IDIn) > 0 {
+		query = query.Where(squirrel.Eq{"m.id": filter.IDIn})
 	}
+
 	if filter.Title != "" {
-		query = query.Where(squirrel.Like{"title": "%" + filter.Title + "%"})
-	}
-	if filter.ReleaseDate != 0 {
-		query = query.Where(squirrel.Eq{"release_date": filter.ReleaseDate})
-	}
-	if filter.Description != "" {
-		query = query.Where(squirrel.Like{"description": "%" + filter.Description + "%"})
+		query = query.Where(squirrel.Like{"m.title": "%" + filter.Title + "%"})
 	}
 
-	sqlx, args, err := query.ToSql()
+	if filter.ReleaseDateFrom != "" {
+		query = query.Where("m.release_date >= ?", filter.ReleaseDateFrom)
+	}
+	if filter.ReleaseDateTo != "" {
+		query = query.Where("m.release_date <= ?", filter.ReleaseDateTo)
+	}
+
+	if len(filter.ActorIDIn) > 0 {
+		subQuery := squirrel.Select("ma.movie_id").
+			From("movie_actors ma").
+			Where(squirrel.Eq{"ma.actor_id": filter.ActorIDIn})
+
+		query = query.Where(squirrel.Eq{"m.id": subQuery})
+	}
+
+	sqlQuery, args, err := query.ToSql()
 	if err != nil {
 		return nil, err
 	}
 
-	rows, err := m.db.Query(sqlx, args...)
+	rows, err := m.db.Query(sqlQuery, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +117,7 @@ func (m *movie) GetMovies(filter models.Movie) ([]models.Movie, error) {
 
 	for rows.Next() {
 		var movie models.Movie
-		if err := rows.Scan(&movie.ID, &movie.Title, &movie.ReleaseDate, &movie.Description); err != nil {
+		if err := rows.Scan(&movie.ID, &movie.Title, &movie.ReleaseDate); err != nil {
 			return nil, err
 		}
 		movies = append(movies, movie)
