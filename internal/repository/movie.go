@@ -9,7 +9,6 @@ type movie struct {
 func NewMovie(db *sql.DB) *movie {
 	return &movie{db}
 }
-
 func (m *movie) CreateMovie(title string, releaseDate string, description string) (int, error) {
 	var movieID int
 	err := m.db.QueryRow("INSERT INTO movies(title, release_date, description) VALUES($1, $2, $3) RETURNING id", title, releaseDate, description).Scan(&movieID)

@@ -11,7 +11,7 @@ func NewActor(db *sql.DB) *actor {
 }
 func (a *actor) CreateActor(name string, birthDate string, gender string) (int, error) {
 	var actorID int
-	err := a.db.QueryRow("INSERT INTO actors (name, birth_date, gender) VALUES($1, $2, $3) RETURNING id", name, birthDate, gender).Scan(&actorID)
+	err := a.db.QueryRow("INSERT INTO actors (name, birth_date, gender) VALUES($1, $2, $3)", name, birthDate, gender).Scan(&actorID)
 	if err != nil {
 		return 0, err
 	}
