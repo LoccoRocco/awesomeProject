@@ -17,6 +17,7 @@ var (
 
 func Run() error {
 	db, err := postgres.ConnectToDB()
+	mux := http.NewServeMux()
 	if err != nil {
 		return err
 	}
@@ -41,15 +42,15 @@ func Run() error {
 	fmt.Println(filmotekaService)
 
 	// Создание HTTP роутера
-	http.HandleFunc("/movies", movieController.GetMovies)
-	http.HandleFunc("/movies/create", movieController.CreateMovie)
-	http.HandleFunc("/movies/update/", movieController.UpdateMovie)
-	http.HandleFunc("/movies/delete/", movieController.DeleteMovie)
+	mux.HandleFunc("GET /actors", actorController.GetActors)
+	mux.HandleFunc("POST /actors", actorController.CreateActor)
+	mux.HandleFunc("PATCH /actors", actorController.UpdateActor)
+	mux.HandleFunc("DELETE /actors", actorController.DeleteActor)
 
-	http.HandleFunc("/actors", actorController.GetActors)
-	http.HandleFunc("/actors/create", actorController.CreateActor)
-	http.HandleFunc("/actors/update/", actorController.UpdateActor)
-	http.HandleFunc("/actors/delete/", actorController.DeleteActor)
+	mux.HandleFunc("GET /movies", movieController.GetMovies)
+	mux.HandleFunc("POST /movies", movieController.CreateMovie)
+	mux.HandleFunc("PATCH /movies", movieController.UpdateMovie)
+	mux.HandleFunc("DELETE /movies", movieController.DeleteMovie)
 
 	log.Printf("Сервер запущен на порту %s", port)
 	if err := http.ListenAndServe(port, nil); err != nil {
