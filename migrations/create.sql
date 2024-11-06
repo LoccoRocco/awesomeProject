@@ -18,3 +18,11 @@ CREATE TABLE actor_movie (
                              movie_id INTEGER REFERENCES movies(id),
                              PRIMARY KEY (actor_id, movie_id)
 );
+
+CREATE TABLE users (
+                       id SERIAL PRIMARY KEY,
+                       username VARCHAR(50) NOT NULL UNIQUE,
+                       password VARCHAR(255) NOT NULL,
+                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                       role VARCHAR(255) NOT NULL CHECK (role IN('Admin', 'User'))
+);

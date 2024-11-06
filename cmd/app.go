@@ -2,11 +2,11 @@ package main
 
 import (
 	"awesomeProject/internal/controller"
+	"awesomeProject/internal/middleware"
 	"awesomeProject/internal/postgres"
 	"awesomeProject/internal/repository"
 	"awesomeProject/internal/service"
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -30,30 +30,33 @@ func Run() error {
 
 	actorRepo := repository.NewActor(db)
 	movieRepo := repository.NewMovie(db)
+	userRepo := repository.NewUser(db)
 
 	actorService := service.NewActor(actorRepo)
 	movieService := service.NewMovie(movieRepo)
+	userService := service.NewUser(userRepo)
 
 	actorController := controller.NewActorController(actorService)
 	movieController := controller.NewMovieController(movieService)
-
-	filmotekaService := controller.NewFilmoteka(movieService, actorService)
-
-	fmt.Println(filmotekaService)
+	userController := controller.NewUserController(userService)
 
 	// Создание HTTP роутера
+
+	mux.HandleFunc("POST /login", userController.Login)
+	mux.HandleFunc("POST /register", userController.Register)
+
 	mux.HandleFunc("GET /actors", actorController.GetActors)
-	mux.HandleFunc("POST /actors", actorController.CreateActor)
-	mux.HandleFunc("PATCH /actors", actorController.UpdateActor)
-	mux.HandleFunc("DELETE /actors", actorController.DeleteActor)
+	mux.HandleFunc("POST /actors", middleware.Authenticate(actorController.CreateActor))
+	mux.HandleFunc("PATCH /actors", middleware.Authenticate(actorController.UpdateActor))
+	mux.HandleFunc("DELETE /actors", middleware.Authenticate(actorController.DeleteActor))
 
 	mux.HandleFunc("GET /movies", movieController.GetMovies)
-	mux.HandleFunc("POST /movies", movieController.CreateMovie)
-	mux.HandleFunc("PATCH /movies", movieController.UpdateMovie)
-	mux.HandleFunc("DELETE /movies", movieController.DeleteMovie)
+	mux.HandleFunc("POST /movies", middleware.Authenticate(movieController.CreateMovie))
+	mux.HandleFunc("PATCH /movies", middleware.Authenticate(movieController.UpdateMovie))
+	mux.HandleFunc("DELETE /movies", middleware.Authenticate(movieController.DeleteMovie))
 
 	log.Printf("Сервер запущен на порту %s", port)
-	if err := http.ListenAndServe(port, nil); err != nil {
+	if err := http.ListenAndServe(port, mux); err != nil {
 		log.Fatalf("Ошибка при запуске сервера: %v", err)
 	}
 

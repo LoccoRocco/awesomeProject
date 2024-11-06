@@ -37,3 +37,17 @@ type UpdateMovie struct {
 	ReleaseDate *int    `json:"release_date,omitempty" db:"release_date"`
 	ActorID     *int    `json:"actor_id,omitempty" db:"actor_id"`
 }
+type Register struct {
+	ID        int    `json:"id" db:"id"`
+	Username  string `json:"username" db:"username"`
+	Password  string `json:"-" db:"password"`
+	CreatedAt string `json:"created_at" db:"created_at"`
+	Role      string `json:"role" db:"role"`
+}
+type User struct {
+	ID        int    `json:"id" db:"id"`
+	Username  string `json:"username" db:"username"`
+	Password  string `json:"-" db:"password"`
+	CreatedAt string `json:"created_at" db:"created_at"`
+	Role      string `json:"role" db:"role"`
+}
