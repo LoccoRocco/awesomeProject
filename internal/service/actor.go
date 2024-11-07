@@ -21,17 +21,17 @@ func NewActor(repo repoActor) *Actor {
 }
 
 func (a *Actor) CreateActor(actorModel models.CreateActor) (int, error) {
-	return a.CreateActor(actorModel)
+	return a.repo.CreateActor(actorModel)
 }
 
 func (a *Actor) DeleteActor(actorModel models.Actor) error {
-	return a.DeleteActor(actorModel)
+	return a.repo.DeleteActor(actorModel)
 }
 
 func (a *Actor) UpdateActor(actorModel models.UpdateActor) error {
-	return a.UpdateActor(actorModel)
+	return a.repo.UpdateActor(actorModel)
 }
 
 func (a *Actor) GetActors(filter repository.ActorFilter) ([]models.Actor, error) {
-	return a.GetActors(filter)
+	return a.repo.GetActors(filter)
 }

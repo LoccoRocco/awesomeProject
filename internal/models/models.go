@@ -20,21 +20,21 @@ type UpdateActor struct {
 type CreateMovie struct {
 	Title       string `json:"title" db:"title"`
 	Description string `json:"description" db:"description"`
-	ReleaseDate int    `json:"release_year" db:"release_Date"`
+	ReleaseDate string `json:"release_date" db:"release_date"`
 	ActorID     int    `json:"actor_id" db:"actor_id"`
 }
 type Movie struct {
 	ID          int    `json:"id" db:"id"`
 	Title       string `json:"title" db:"title"`
 	Description string `json:"description" db:"description"`
-	ReleaseDate int    `json:"release_date" db:"release_date"`
+	ReleaseDate string `json:"release_date" db:"release_date"`
 	ActorID     int    `json:"actor_id" db:"actor_id"`
 }
 type UpdateMovie struct {
 	ID          int     `json:"id" db:"id"`
 	Title       *string `json:"title,omitempty" db:"title"`
 	Description *string `json:"description,omitempty" db:"description"`
-	ReleaseDate *int    `json:"release_date,omitempty" db:"release_date"`
+	ReleaseDate *string `json:"release_date,omitempty" db:"release_date"`
 	ActorID     *int    `json:"actor_id,omitempty" db:"actor_id"`
 }
 type Register struct {

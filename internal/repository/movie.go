@@ -25,7 +25,8 @@ func NewMovie(db *sql.DB) *movie {
 func (m *movie) CreateMovie(movieModel models.CreateMovie) (int, error) {
 	var movieID int
 
-	query, args, err := m.builder.Insert("movies").
+	query, args, err := m.builder.
+		Insert("movies").
 		Columns("title", "release_date", "description").
 		Values(movieModel.Title, movieModel.ReleaseDate, movieModel.Description).
 		Suffix("RETURNING id").

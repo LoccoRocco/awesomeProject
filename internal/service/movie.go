@@ -21,17 +21,17 @@ func NewMovie(repo repoMovie) *Movie {
 }
 
 func (m *Movie) CreateMovie(movieModel models.CreateMovie) (int, error) {
-	return m.CreateMovie(movieModel)
+	return m.repo.CreateMovie(movieModel)
 }
 
 func (m *Movie) UpdateMovie(movieModel models.UpdateMovie) error {
-	return m.UpdateMovie(movieModel)
+	return m.repo.UpdateMovie(movieModel)
 }
 
 func (m *Movie) DeleteMovie(movieModel models.Movie) error {
-	return m.DeleteMovie(movieModel)
+	return m.repo.DeleteMovie(movieModel)
 }
 
 func (m *Movie) GetMovies(filter repository.MovieFilter) ([]models.Movie, error) {
-	return m.GetMovies(filter)
+	return m.repo.GetMovies(filter)
 }
