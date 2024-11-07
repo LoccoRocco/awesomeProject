@@ -3,6 +3,7 @@ package jwt
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -13,7 +14,9 @@ type Claims struct {
 func Generate(userId string, expiresIn time.Duration, signingKey []byte) (string, error) {
 	claims := Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "awesomeProject",
 			Subject:   userId,
+			ID:        uuid.NewString(),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expiresIn)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},

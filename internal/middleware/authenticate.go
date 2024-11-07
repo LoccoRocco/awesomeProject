@@ -21,6 +21,7 @@ func Authenticate(next http.HandlerFunc) http.HandlerFunc {
 
 		claims, err := jwt.Verify(jwtSecret, []byte(token))
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, "Invalid or expired token", http.StatusUnauthorized)
 			return
 		}
