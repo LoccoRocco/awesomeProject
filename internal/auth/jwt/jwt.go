@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -40,22 +41,18 @@ func GeneratePair(userId string, signingKey []byte) (string, string, error) {
 	return accessTok, refTok, nil
 }
 
-func Verify(tokenString string, signingKey []byte) (Claims, error) {
-	var claims Claims
-	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return signingKey, nil
+func Verify(key, token string) (jwt.Claims, error) {
+	jwtToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return []byte(key), nil
 	})
 
 	if err != nil {
-		return Claims{}, err
+		return nil, errors.New("jwt token parse")
 	}
 
-	if !token.Valid {
-		return Claims{}, fmt.Errorf("invalid token")
+	if !jwtToken.Valid {
+		return nil, errors.New("invalid token")
 	}
 
-	return claims, nil
+	return jwtToken.Claims, nil
 }
